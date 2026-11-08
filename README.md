@@ -1,6 +1,6 @@
 # AI 院感分析工作台（DSH 插件）
 
-> 当前是 DeepSeek Harness 插件版本，Web / Docker 版本地址为：https://github.com/ostar999/ostar-dsh-nosocomial-infection-workbench-webui-op
+> 当前是 DeepSeek Harness 插件版本，Web / Docker 版本地址为：https://github.com/ostar999/ostar-nosocomial-infection-workbench-webui-op
 
 把院感诊断能力做成一个按病例工作的分析台：
 一个任务 = 一个病例，导入该病例的多份诊疗材料，点一次「开始综合分析」，得到按标准条文
