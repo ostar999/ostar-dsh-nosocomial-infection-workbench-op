@@ -1,0 +1,18 @@
+# dsh bundle patch — inserts the AI nosocomial-infection analysis workbench.
+- insert:
+    - id: infection-workbench
+      name: 'ostar-dsh-nosocomial-infection-workbench-op'
+      config:
+        # Durable data (tasks, imported materials, reports, chat logs).
+        # Empty means <profile>/data/infection-workbench.
+        dataDir: ''
+        # Override the model used for analysis / Q&A. Empty = the Host default
+        # model (Settings → Models).
+        provider: ''
+        model: ''
+        # Prompt ceilings, in characters.
+        materialChars: 260000
+        # 标准资料与解读约 10 万字符；默认全量载入，避免漏引专项指南
+        standardsChars: 420000
+        chatChars: 420000
+        standardsMode: full

@@ -1,0 +1,204 @@
+{
+  "_说明": "条目清单化评分（方案A）：每种诊断固定条目清单+满分，% = 命中得分/满分，可复算。分层结构：gate（必要条件，不满足则诊断不成立）→ 临床诊断层（0.6）→ 病原学层（0.3）→ 确证加分（0.1）→ 辅助加分（0.05/条，上限0.1）。总分满分1.0。分级：<0.3低度、0.3-0.69中度、0.70-0.94高度、≥0.95确证。",
+  "scoring_layers": {
+    "clinical": 0.6,
+    "pathogen": 0.3,
+    "gold_standard_bonus": 0.1,
+    "supportive_per_item": 0.05,
+    "supportive_max": 0.1,
+    "full_score": 1.0
+  },
+  "band_mapping": [
+    {"max": 0.3, "label": "低度", "note": "证据不足或不符合"},
+    {"max": 0.7, "label": "中度", "note": "部分符合，建议补充检查"},
+    {"max": 0.95, "label": "高度", "note": "临床+病原学诊断均符合"},
+    {"max": 1.0, "label": "确证", "note": "金标准证据"}
+  ],
+  "interval_rules": {
+    "全证据齐全（所有条目均可评估）": "±5%",
+    "部分缺失（培养/影像/症状任一缺）": "±10%",
+    "缺培养结果": "±15%，且病原学层按0计，总分上限0.69（中度顶）",
+    "点估计": "得分×100，区间=点估计±半宽"
+  },
+  "deficiency_rules": {
+    "_说明": "数据缺口处理规则（真实案例暴露的问题）",
+    "no_quantitative_count": {
+      "rule": "培养结果无 cfu/mL 定量计数时：该培养不能按定量阈值条款计分，降为辅助证据（+0.05）；涂片半定量（如G+杆菌2+）同理降为辅助；但若涂片见白细胞吞噬细菌现象，可按病原学层计分。",
+      "source": "rules/checklists.json"
+    },
+    "pathogen_not_covered_by_standard": {
+      "rule": "培养病原体类型不在标准条款覆盖范围（如尿培养真菌、革兰阳性杆菌——标准仅列革兰阳性球菌与革兰阴性杆菌）时：病原学层按0.15计（半计），并触发定植/污染核查（《WS-T_857-2025_医院感染病例判定标准-通用原则.md》§3.4、§4.6）；连续≥2次同菌且伴尿白细胞阳性+临床症状，可按病原学层0.3计。",
+      "source": "rules/checklists.json"
+    },
+    "no_imaging": {
+      "rule": "关键影像证据缺失：临床诊断层按0.3计（半计），并在信息缺口中列为第一优先补充项。"
+    }
+  },
+  "diagnoses": {
+    "VAP_呼吸机相关肺炎": {
+      "gate": [
+        {"id": "VAP-g1", "check": "建立人工气道（气管插管/气管切开）并接受机械通气 48h 后发生肺炎（含发生肺炎 48h 内曾使用人工气道者）", "source": "references/三管感染诊断相关_标准-论文-指南/呼吸机相关肺炎/WS-T_863-2025_呼吸机相关肺炎预防与控制标准.md", "clause": "§3.1"}
+      ],
+      "clinical_layer": {
+        "required": [{"id": "VAP-c0", "check": "胸部 X 线/CT 新出现或进展性浸润影、实变影或磨玻璃影"}],
+        "items": [
+          {"id": "VAP-c1", "check": "发热（体温>38℃）"},
+          {"id": "VAP-c2", "check": "脓性气道分泌物"},
+          {"id": "VAP-c3", "check": "外周血 WBC>10×10⁹/L 或 <4×10⁹/L"}
+        ],
+        "min_hits": 2,
+        "note": "required 未命中→临床层0分且总分上限0.29；items 命中数<min_hits→临床层0分"
+      },
+      "pathogen_layer": {
+        "items": [
+          {"id": "VAP-p1", "check": "合格下呼吸道标本培养出与临床表现相符的病原菌（合格=中性粒细胞>25/低倍、上皮细胞<10/低倍或比值>2.5:1）"},
+          {"id": "VAP-p2", "check": "定量培养阈值达标：ETA≥10⁵、BALF≥10⁴、PSB≥10³ CFU/mL"},
+          {"id": "VAP-p3", "check": "肺组织病理/细胞病理或直接镜检见真菌并有组织损害证据；或血清学 IgM 阳转/双份 IgG 4 倍变化；或呼吸道病毒抗原/核酸/培养阳性"}
+        ],
+        "any_hit": true,
+        "gold_standard": ["VAP-p2 且临床相符", "VAP-p3"]
+      },
+      "supportive": [
+        {"id": "VAP-s1", "check": "PCT 升高"},
+        {"id": "VAP-s2", "check": "CRP 升高"},
+        {"id": "VAP-s3", "check": "机械通气>72h、声门下吸引等危险因素"}
+      ]
+    },
+    "CAUTI_导尿管相关尿路感染": {
+      "gate": [
+        {"id": "CAUTI-g1", "check": "留置导尿管期间或拔除导尿管 48h 内发生的泌尿系统感染", "source": "references/三管感染诊断相关_标准-论文-指南/导尿管相关尿路感染/卫办医政发〔2010〕187号_导尿管相关尿路感染预防与控制技术指南（试行）.md", "clause": "定义"}
+      ],
+      "clinical_layer": {
+        "required": [{"id": "CAUTI-c0", "check": "尿白细胞异常（男≥5个/HPF、女≥10个/HPF）或尿常规白细胞+及以上"}],
+        "items": [
+          {"id": "CAUTI-c1", "check": "尿频尿急尿痛等下尿路刺激症状"},
+          {"id": "CAUTI-c2", "check": "下腹触痛、肾区叩痛"},
+          {"id": "CAUTI-c3", "check": "发热（>38℃）"}
+        ],
+        "min_hits": 1,
+        "note": "镇静/插管患者无法表达症状时：c1 记为无法评估，min_hits 判定基于可评估条目；required 未命中→临床层0分"
+      },
+      "pathogen_layer": {
+        "items": [
+          {"id": "CAUTI-p1", "check": "清洁中段尿/导尿留取尿液：革兰阳性球菌≥10⁴ cfu/ml 或革兰阴性杆菌≥10⁵ cfu/ml"},
+          {"id": "CAUTI-p2", "check": "耻骨联合上膀胱穿刺尿≥10³ cfu/ml"},
+          {"id": "CAUTI-p3", "check": "新鲜尿液离心相差显微镜每30个视野半数见细菌（或涂片见白细胞吞噬细菌）"},
+          {"id": "CAUTI-p4", "check": "手术/病理/影像学证据证实尿路感染"}
+        ],
+        "any_hit": true,
+        "gold_standard": ["CAUTI-p2"]
+      },
+      "supportive": [
+        {"id": "CAUTI-s1", "check": "PCT/CRP 升高"},
+        {"id": "CAUTI-s2", "check": "连续≥2次培养同菌"}
+      ],
+      "special": {
+        "asymptomatic_bacteriuria": "无症状性菌尿症（仅培养阳性无任何症状体征）单独列出，不判 CAUTI，不进入评分（《WS-T_862-2025_导尿管相关尿路感染预防与控制标准.md》监测要求：不宜常规筛查无症状菌尿症）"
+      }
+    },
+    "VCAI_CRBSI_血管导管相关血流感染": {
+      "gate": [
+        {"id": "VCAI-g1", "check": "留置血管导管期间或拔除后 48h 内发生的原发性、与其他部位感染无关的感染", "source": "references/三管感染诊断相关_标准-论文-指南/血管导管相关感染/国卫办医函〔2021〕136号_血管导管相关感染预防与控制指南（2021年版）.md", "clause": "定义"},
+        {"id": "VCAI-g2", "check": "排他性：除血管导管外无其他明确感染源（肺炎/尿路感染/伤口等必须先排除）"}
+      ],
+      "clinical_layer": {
+        "required": [{"id": "VCAI-c0", "check": "发热（>38℃）、寒颤或低血压等全身感染表现"}],
+        "items": [
+          {"id": "VCAI-c1", "check": "穿刺点红、肿、热、痛或渗出（局部感染）"},
+          {"id": "VCAI-c2", "check": "拔管后症状缓解"}
+        ],
+        "min_hits": 0,
+        "note": "局部感染型仅需 c1 即可独立诊断；血流感染型必须 required 命中"
+      },
+      "pathogen_layer": {
+        "items": [
+          {"id": "VCAI-p1", "check": "外周静脉血培养细菌或真菌阳性"},
+          {"id": "VCAI-p2", "check": "导管尖端（半定量≥15 cfu/导管段，Maki 法）和外周血培养出相同种类、相同药敏结果的致病菌"},
+          {"id": "VCAI-p3", "check": "双套双瓶血培养同菌阳性"}
+        ],
+        "any_hit": true,
+        "gold_standard": ["VCAI-p3", "VCAI-p2"]
+      },
+      "supportive": [
+        {"id": "VCAI-s1", "check": "PCT 升高"},
+        {"id": "VCAI-s2", "check": "导管留置>7天等高危因素"}
+      ]
+    },
+    "SSI_手术部位感染": {
+      "gate": [
+        {"id": "SSI-g1", "check": "有手术史且感染发生于术后时限内：表浅30日；深部/器官腔隙无植入物30日、有植入物90日（以《WS-T_861-2025_手术部位感染预防与控制标准.md》§3.2-3.4为准，报告中标注口径）", "source": "references/外科手术部位感染相关/WS-T_861-2025_手术部位感染预防与控制标准.md", "clause": "§3.2-3.4"}
+      ],
+      "clinical_layer": {
+        "required": [{"id": "SSI-c0", "check": "累及层次符合：表浅（皮肤皮下）/深部（深筋膜肌肉）/器官腔隙"}],
+        "items": [
+          {"id": "SSI-c1", "check": "切口红、肿、热、痛或有脓性分泌物"},
+          {"id": "SSI-c2", "check": "深部引流/穿刺出脓液（非来自器官腔隙）"},
+          {"id": "SSI-c3", "check": "切口深部组织自行裂开或由外科医师开放，伴感染症状体征"},
+          {"id": "SSI-c4", "check": "发热>38℃ 或局部疼痛压痛"}
+        ],
+        "min_hits": 1,
+        "note": "针眼处脓点、脂肪液化（清亮液体）不属切口感染"
+      },
+      "pathogen_layer": {
+        "items": [
+          {"id": "SSI-p1", "check": "切口分泌物/组织培养出病原菌"},
+          {"id": "SSI-p2", "check": "组织病理/影像学（如超声脓肿）证实"}
+        ],
+        "any_hit": true,
+        "gold_standard": ["SSI-p2"]
+      },
+      "supportive": [
+        {"id": "SSI-s1", "check": "PCT/CRP 升高"},
+        {"id": "SSI-s2", "check": "污染/感染切口（Ⅲ/Ⅳ类）等高危因素"}
+      ]
+    },
+    "LRTI_下呼吸道感染（通用，2001诊断标准）": {
+      "gate": [],
+      "clinical_layer": {
+        "required": [],
+        "items": [
+          {"id": "LRTI-c1", "check": "咳嗽、痰粘稠、肺部湿罗音"},
+          {"id": "LRTI-c2", "check": "发热"},
+          {"id": "LRTI-c3", "check": "白细胞总数和（或）中性粒细胞比例增高"},
+          {"id": "LRTI-c4", "check": "X 线显示肺部有炎性浸润性病变"}
+        ],
+        "min_hits": 2,
+        "note": "《卫医发[2001]2号_医院感染诊断标准(试行).md》下呼吸道感染临床诊断：咳嗽痰粘稠+湿罗音并伴发热/WBC↑/影像阳性之一"
+      },
+      "pathogen_layer": {
+        "items": [
+          {"id": "LRTI-p1", "check": "经筛选痰液连续两次分离到相同病原体"},
+          {"id": "LRTI-p2", "check": "痰定量培养分离病原菌≥10⁶ cfu/ml"},
+          {"id": "LRTI-p3", "check": "血培养/胸水培养阳性，或气管吸出物/纤支镜采集标本培养阳性"}
+        ],
+        "any_hit": true,
+        "gold_standard": ["LRTI-p3"]
+      },
+      "supportive": [
+        {"id": "LRTI-s1", "check": "PCT 升高"}
+      ]
+    },
+    "UTI_泌尿系统感染（通用，2001诊断标准）": {
+      "gate": [],
+      "clinical_layer": {
+        "required": [{"id": "UTI-c0", "check": "尿检白细胞：男≥5个/HPF、女≥10个/HPF"}],
+        "items": [
+          {"id": "UTI-c1", "check": "尿频、尿急、尿痛等膀胱刺激征"},
+          {"id": "UTI-c2", "check": "下腹触痛、肾区叩痛，伴或不伴发热"}
+        ],
+        "min_hits": 1
+      },
+      "pathogen_layer": {
+        "items": [
+          {"id": "UTI-p1", "check": "清洁中段尿：G+球菌≥10⁴ 或 G-杆菌≥10⁵ cfu/ml"},
+          {"id": "UTI-p2", "check": "膀胱穿刺尿≥10³ cfu/ml"},
+          {"id": "UTI-p3", "check": "相差显微镜每30个视野半数见细菌"},
+          {"id": "UTI-p4", "check": "手术/病理/影像学证实"}
+        ],
+        "any_hit": true,
+        "gold_standard": ["UTI-p2"]
+      },
+      "supportive": []
+    }
+  }
+}

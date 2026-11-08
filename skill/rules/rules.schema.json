@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "医院感染判定规则条目",
+  "description": "标准条文的可执行转译。判定计算按规则表执行，引用原文时回 references/ 核实条文号与措辞。",
+  "type": "object",
+  "properties": {
+    "rule_id": {
+      "type": "string",
+      "description": "规则编号，格式 <标准>-<条文>，如 857-5.1b、2001-肺部-临床、861-3.3"
+    },
+    "module": {
+      "type": "string",
+      "enum": ["stage1_general", "stage2_system", "stage3_special", "scoring"],
+      "description": "所属阶段：stage1_general=通用判定(857)，stage2_system=部位诊断(2001)，stage3_special=三管/SSI专项，scoring=评分"
+    },
+    "name": { "type": "string", "description": "短名称" },
+    "category": {
+      "type": "string",
+      "enum": ["判定依据", "排除依据", "时间窗", "临床诊断", "病原学诊断", "术语定义", "预防要点", "评分规则"],
+      "description": "规则类别"
+    },
+    "check": {
+      "type": "string",
+      "description": "判定逻辑的可执行描述（自然语言指令，模型按此核对患者数据）"
+    },
+    "evidence_strength": {
+      "type": "string",
+      "enum": ["strong", "medium", "weak", "supportive"],
+      "description": "证据强度：strong=金标准(1.0)、medium=病原学符合(0.7)、weak=临床诊断(0.4)、supportive=辅助指标(0.2)"
+    },
+    "weight": { "type": "number", "description": "计分权重，与 evidence_strength 对应" },
+    "veto": {
+      "type": "boolean",
+      "description": "true=命中即否决该候选诊断（排除依据类规则），不计分"
+    },
+    "source": { "type": "string", "description": "references/ 下的相对文件路径" },
+    "source_clause": { "type": "string", "description": "条文号，如 §5.1b、§3.3" },
+    "quote": { "type": "string", "description": "条文原文摘录（用于报告引用，须与原文一致）" }
+  },
+  "required": ["rule_id", "module", "name", "category", "check", "source", "source_clause"],
+  "additionalProperties": false
+}

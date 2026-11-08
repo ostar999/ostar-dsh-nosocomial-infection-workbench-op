@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "AI Infection Analysis Workbench",
+    "description": "One task per case: import clinical records in bulk, get a standard-cited infection judgement, diagnosis, likelihood and evidence report, then ask follow-up questions."
+  }
+}

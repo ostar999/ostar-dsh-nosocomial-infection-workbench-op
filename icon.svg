@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="512" height="512" role="img" aria-labelledby="starShieldTitle starShieldDesc">
+  <title id="starShieldTitle">欧星星 · AI院感工作台</title>
+  <desc id="starShieldDesc">渐变盾牌内嵌一颗白色五角星，无医疗十字。</desc>
+  <defs>
+    <linearGradient id="shieldFill" x1="9" y1="4.5" x2="55" y2="59" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2bb3a3"/>
+      <stop offset="0.52" stop-color="#1b7fb3"/>
+      <stop offset="1" stop-color="#2d5bb9"/>
+    </linearGradient>
+    <linearGradient id="starFill" x1="32" y1="17.1" x2="32" y2="46" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#e9fffb"/>
+    </linearGradient>
+  </defs>
+  <path d="M32 4.5 54.5 12v18.2c0 12.6-8.2 23.1-22.5 29.3C17.7 53.3 9.5 42.8 9.5 30.2V12L32 4.5Z" fill="url(#shieldFill)"/>
+  <path d="M32 17.1 35.41 26.81 45.7 27.05 37.52 33.29 40.46 43.15 32 37.3 23.54 43.15 26.48 33.29 18.3 27.05 28.59 26.81Z" fill="url(#starFill)"/>
+</svg>

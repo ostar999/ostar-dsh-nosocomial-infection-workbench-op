@@ -1,0 +1,51 @@
+{
+  "name": "ostar-dsh-nosocomial-infection-workbench-op",
+  "version": "2.17.4",
+  "description": "AI 院感分析工作台 — a task-oriented nosocomial-infection analysis workbench for DeepSeek Harness.",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "lib/*.js",
+    "skill/**",
+    "locale/*.json",
+    "icon.svg",
+    "README.md",
+    "THIRD-PARTY.md",
+    "LICENSE",
+    "LICENSE-COMMERCIAL.md",
+    "NOTICE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-locale"
+      ]
+    }
+  },
+  "license": "AGPL-3.0-only",
+  "icon": "./icon.svg",
+  "dependencies": {
+    "pdfjs-dist": "6.5.438"
+  },
+  "engines": {
+    "node": ">=22.13.0 <23 || >=24"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ostar999/ostar-dsh-nosocomial-infection-workbench-op.git"
+  },
+  "homepage": "https://github.com/ostar999/ostar-dsh-nosocomial-infection-workbench-op"
+}
